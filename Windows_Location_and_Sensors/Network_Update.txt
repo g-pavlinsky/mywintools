@@ -1,0 +1,10 @@
+Добавьте в C:\Windows\System32\drivers\etc\hosts или в корпоративный DNS-фильтр:
+
+# Блокировка внешних сервисов геолокации (уровень сети)
+0.0.0.0 location.services.mozilla.com
+0.0.0.0 wifi-location.windows.com
+0.0.0.0 geo-prod.do.dsp.mp.microsoft.com
+0.0.0.0 v10.events.data.microsoft.com
+
+Это заблокирует запросы геолокации на уровне сети, даже если приложение обойдёт настройки реестра.
+AKUMEN Consulting

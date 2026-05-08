@@ -1,3 +1,5 @@
+powershell
+
 # Отключение задач планировщика (для усиленного варианта):
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Application Experience\" -TaskName "Microsoft Compatibility Appraiser"
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Application Experience\" -TaskName "ProgramDataUpdater"

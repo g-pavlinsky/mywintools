@@ -1,0 +1,62 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Restore_Compatibility_Telemetry_Defaults.reg
+; НАЗНАЧЕНИЕ: Полный возврат служб и политик к заводским настройкам Windows
+; ==========================================================
+; ЧТО ЭТО: Точная инверсия файла Disable_Compatibility_Telemetry_Hardened.reg.
+;
+; ЗАЧЕМ НУЖЕН:
+; - Если требуется диагностика сбоев через отправку отчетов в Microsoft.
+; - Если перестал работать мастер совместимости программ.
+; - При подготовке ПК к передаче в среду с требованиями мониторинга (GPO).
+;
+; ЧТО СДЕЛАЕТ ФАЙЛ:
+; 1. Вернет службы AeLookupSvc, PcaSvc, DiagTrack, dmwappush в режим "По требованию" или "Авто".
+; 2. Удалит все локальные политики блокировки телеметрии и AppCompat.
+; 3. Снимет запрет на Windows Error Reporting.
+;
+; ВАЖНО:
+; - Требуется перезагрузка для запуска служб.
+; - Удаляются только локальные переопределения. Доменные GPO применятся заново.
+; - Задачи планировщика (Task Scheduler) остаются в том состоянии, в котором их оставили.
+;   Если они были отключены вручную (schtasks /Disable), их нужно включить отдельно.
+; АКТИВАЦИЯ:
+; 1. Импорт файла.
+; 2. Перезагрузка ПК.
+; 3. Проверка: services.msc (службы должны быть в режиме "Вручную" или "Автоматически").
+; ==========================================================
+; AKUMEN Consulting
+; ==========================================================
+
+; --- ВОЗВРАТ ЗАПУСКА СЛУЖБ ---
+; AeLookupSvc: Стандарт "Вручную" (запускается при проверке совместимости).
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\AeLookupSvc]
+"Start"=dword:00000003
+
+; PcaSvc: Стандарт "Автоматически (отложенный запуск)".
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PcaSvc]
+"Start"=dword:00000002
+
+; DiagTrack: Стандарт "Автоматически".
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\DiagTrack]
+"Start"=dword:00000002
+
+; dmwappushservice: Стандарт "Вручную".
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\dmwappushservice]
+"Start"=dword:00000003
+
+; --- УДАЛЕНИЕ ПОЛИТИК БЛОКИРОВКИ ---
+; Удаление веток возвращает управление настройками по умолчанию или доменным GPO.
+
+; Сброс политик AppCompat (инвентаризация, PCA, AIT).
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\AppCompat]
+
+; Сброс политик Телеметрии (DataCollection).
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection]
+
+; Сброс политик WER (отчеты об ошибках).
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting]
+
+; Сброс политик CEIP (программа улучшения качества).
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\SQMClient\Windows]

@@ -1,0 +1,67 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Disable_Compatibility_Inventory_Services_GPO_Hardened.reg
+; НАЗНАЧЕНИЕ: Отключение служб совместимости с защитой от переопределения через GPO
+; ==========================================================
+; ЧТО ЭТО: Двухуровневая блокировка:
+; 1. Локальный уровень: отключение запуска служб (как обычно).
+; 2. Уровень политик: запрет функционала на уровне GPO-ключей.
+;
+; ЗАЧЕМ МЕНЯЕМ: В доменной среде администратор может принудительно
+; включать службы совместимости через групповые политики.
+; Этот файл устанавливает "защиту от дурака": даже если политика
+; попытается включить службу, функционал останется заблокированным
+; на уровне флага "Запретить инвентаризацию".
+;
+; ЧТО СДЕЛАЕТ ФАЙЛ:
+; • Отключит запуск служб (AeLookupSvc, PcaSvc, DiagTrack)
+; • Установит политики, запрещающие сбор данных совместимости
+; • Заблокирует телеметрию и инвентаризацию на уровне AppCompat
+;
+; ВАЖНО: Требует перезагрузки. В редких случаях доменная политика
+; с более высоким приоритетом (например, "Принудительно") может
+; переписать эти ключи. Для 100% гарантии используйте этот файл
+; в сочетании с локальной политикой (gpedit) или настройкой
+; приоритета политик в домене.
+; АКТИВАЦИЯ: После импорта выполните `gpupdate /force` для применения.
+; АКТИВАЦИЯ: Перезагрузка обязательна для остановки служб.
+; AKUMEN Consulting
+; ==========================================================
+
+; === УРОВЕНЬ 1: ОТКЛЮЧЕНИЕ ЗАПУСКА СЛУЖБ (ЛОКАЛЬНЫЙ) ===
+; Базовая блокировка: служба не запустится через диспетчер служб.
+
+; AeLookupSvc: Application Experience
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\AeLookupSvc]
+"Start"=dword:00000004
+
+; PcaSvc: Program Compatibility Assistant
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PcaSvc]
+"Start"=dword:00000004
+
+; DiagTrack: Connected User Experiences and Telemetry
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\DiagTrack]
+"Start"=dword:00000004
+
+; dmwappushservice: WAP Push Message Routing
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\dmwappushservice]
+"Start"=dword:00000004
+
+; === УРОВЕНЬ 2: БЛОКИРОВКА ФУНКЦИОНАЛА ЧЕРЕЗ ПОЛИТИКИ (ЗАЩИТА ОТ GPO) ===
+; Эти ключи запрещают саму возможность сбора данных, даже если служба запущена.
+
+; Политики AppCompat: запрет инвентаризации и PCA
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\AppCompat]
+; DisableInventory: 1 = Запретить сбор инвентаризационных данных о ПО
+"DisableInventory"=dword:00000001
+; DisablePCA: 1 = Запретить работу Program Compatibility Assistant
+"DisablePCA"=dword:00000001
+; AITEnable: 0 = Отключить Application Impact Telemetry (сбор данных о запуске)
+"AITEnable"=dword:00000000
+
+; Политики телеметрии: минимальный уровень диагностики
+; (дублирует настройки для устойчивости к сбросу)
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection]
+"AllowTelemetry"=dword:00000000
+"DisableTelemetry"=dword:00000001

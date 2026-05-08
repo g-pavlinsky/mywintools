@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Restore_AutoUpdate_Internet_Access.reg
+; НАЗНАЧЕНИЕ: Возврат автоматических обновлений из интернета
+; ==========================================================
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate]

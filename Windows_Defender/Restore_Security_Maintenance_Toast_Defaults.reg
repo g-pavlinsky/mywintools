@@ -1,0 +1,16 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Restore_Security_Maintenance_Toast_Defaults.reg
+; НАЗНАЧЕНИЕ: Возврат уведомлений Центра безопасности
+; ==========================================================
+; СБРОС: Удаляет принудительную блокировку и метку времени.
+; Windows снова сможет показывать рекомендации и статус защиты.
+; AKUMEN Consulting
+; ==========================================================
+
+; Удаление ручной метки времени (система восстановит актуальную)
+[-HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\TimestampWhenSeen]
+
+; Возврат разрешения на показ тостов (удаление блокировки)
+[-HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance\Enabled]

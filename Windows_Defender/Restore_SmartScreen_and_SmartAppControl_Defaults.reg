@@ -1,0 +1,26 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Restore_SmartScreen_and_SmartAppControl_Defaults.reg
+; НАЗНАЧЕНИЕ: Возврат SmartScreen и Smart App Control в стандартное состояние
+; ==========================================================
+; УДАЛЕНИЕ/СБРОС: Восстанавливает заводские значения проверки.
+; SAC вернётся к управлению через Windows Defender, Edge начнёт
+; проверять загрузки, проводник снова будет предупреждать о рисках.
+; Требует перезагрузки. Удаляем ключи политик CI, чтобы Windows
+; управляла ими автоматически, а не через ручное переопределение.
+; AKUMEN Consulting
+; ==========================================================
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer]
+"SmartScreenEnabled"="On"
+
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Edge\SmartScreenEnabled]
+@=dword:00000001
+
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost]
+"EnableWebContentEvaluation"=dword:00000001
+
+; Удаление ручного состояния политики SAC (вернёт контроль ОС)
+[-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\CI\Policy\VerifiedAndReputablePolicyState]
+[-HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\CI\Policy\VerifiedAndReputablePolicyState]

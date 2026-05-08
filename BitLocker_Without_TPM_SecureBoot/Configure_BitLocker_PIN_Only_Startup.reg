@@ -1,0 +1,32 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Configure_BitLocker_PIN_Only_Startup.reg
+; НАЗНАЧЕНИЕ: BitLocker без TPM с обязательным PIN (без USB-ключа)
+; ==========================================================
+; ЧТО ЭТО: Уточнённая политика, требующая только цифровой PIN при загрузке.
+;
+; ЗАЧЕМ МЕНЯЕМ: Удобнее, чем носить с собой USB-ключ. Подходит для
+; стационарных ПК и рабочих станций, где потеря флешки критична,
+; а ввод PIN перед загрузкой Windows приемлем.
+;
+; ЧТО СДЕЛАЕТ ФАЙЛ: Разрешит работу без TPM, но явно включит режим
+; "Использовать только PIN". USB-ключ запуска не потребуется.
+;
+; ВАЖНО: Запомните PIN. Без него и без ключа восстановления данные утеряны.
+; Не подходит для серверов без физического доступа к консоли.
+; AKUMEN Consulting
+; ==========================================================
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\BitLocker]
+"AllowBitLockerWithoutTPM"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\FVE]
+"EnableBDEWithNoTPM"=dword:00000001
+"UseAdvancedStartup"=dword:00000001
+"EnableNonTPM"=dword:00000001
+; --- ЯВНОЕ ТРЕБОВАНИЕ PIN, ОТКЛЮЧЕНИЕ TPM И USB-КЛЮЧА ---
+"UseTPM"=dword:00000003
+"UseTPMPIN"=dword:00000002
+"UseTPMKey"=dword:00000003
+"UseTPMKeyPIN"=dword:00000003

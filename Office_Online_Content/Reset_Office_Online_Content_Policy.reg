@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+; ==========================================================
+; ФАЙЛ: Reset_Office_Online_Content_Policy.reg
+; НАЗНАЧЕНИЕ: Сброс явных политик онлайн-контента Office к настройкам по умолчанию
+; ==========================================================
+; Удаляем принудительное разрешение или блокировку, возвращая управление ОС.
+[-HKEY_CURRENT_USER\Software\Policies\Microsoft\Office\16.0\Common\Internet\Useonlinecontent]
